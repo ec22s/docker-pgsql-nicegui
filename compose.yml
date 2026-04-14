@@ -9,6 +9,11 @@ services:
     environment:
       POSTGRES_USER: 'user'
       POSTGRES_PASSWORD: 'postgres'
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1"]
+      interval: 3s
+      timeout: 3s
+      retries: 3
 
   nicegui:
     image: image-nicegui
@@ -17,7 +22,8 @@ services:
       context: ./nicegui
     container_name: container-nicegui
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - 8888:8080
     working_dir: "/app"
