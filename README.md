@@ -1,0 +1,81 @@
+# docker-pgsql-nicegui
+
+- PostgreSQLと、PythonのWebフレームワーク `NiceGUI` を合わせたコンテナひな形
+
+<br>
+
+### 趣旨
+
+- [docker-mysql-nicegui](https://github.com/ec22s/docker-mysql-nicegui)のPostgreSQL版。NiceGUIにDB機能がなく、DBライブラリで読み込んだデータをどんな風に使えるか確認
+
+  - `ui.table` に普通にロードするなら、データボディは辞書の配列にする。下記のように
+
+    ```Python
+    [
+      { '列名1': データ, '列名2': データ},
+      { '列名1': データ, '列名2': データ},
+      { '列名1': データ, '列名2': データ},
+      ...
+    ]
+    ```
+
+    → 公式ドキュメント https://nicegui.io/documentation/table
+
+  - NiceGUIのディスカッションでも質問されていたが結論は曖昧 → [リンク](https://github.com/zauberzeug/nicegui/discussions/1868)
+
+  - Pandasのデータフレーム形式を経由する方法もあり、その時は列毎の配列にする。下記のように
+
+    ```Python
+    df = pd.DataFrame(
+      data={ '列名1': [ データ, データ, ... ], '列名2': [ データ, データ, ... ] }
+    )
+    ui.table.from_pandas(df)
+    ```
+
+     → 公式ドキュメント https://nicegui.io/documentation/table#table_from_pandas_dataframe
+
+<br>
+
+### 動作確認環境（2026年4月）
+
+- macos Tahoe 26.4
+
+- GNU bash, version 5.3.9(1)-release (x86_64-apple-darwin23.6.0)
+
+- Docker version 29.4.0, build 9d7ad9ff18
+
+- Docker Compose version 5.1.0
+
+- GNU Make 3.81
+
+<br>
+
+### 利用例（リポジトリトップでのコマンド）
+
+`make dev` DBコンテナ、続いてNiceGUIコンテナを起動
+
+- http://localhost:8888 で下記のように表示される
+
+  <img width=256 height=256 src="https://github.com/user-attachments/assets/1356d971-f3dd-4bac-a853-73c144819f65" />
+
+- `nicegui/main.py` を編集すると `NiceGUI` がホットリロードする（開発で便利）
+
+`make down` コンテナ終了（DBボリュームは維持）
+
+`make clean` コンテナを終了し、コンテナとイメージとボリューム全て消去
+
+<br>
+
+### TODO
+
+  - 公式ドキュメントにある各種形式のテーブルを作る
+
+    → https://nicegui.io/documentation/table
+
+  - `Tortoise ORM` + `SQLite` の例が公式リポジトリにあり、PostgreSQLでも試す
+
+    → https://github.com/zauberzeug/nicegui/blob/main/examples/sqlite_database/main.py
+
+<br>
+
+---
